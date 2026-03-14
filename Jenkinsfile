@@ -20,11 +20,11 @@ pipeline {
             steps {
                 sh '''
                 docker rm -f todo-app || true
+                docker ps -q --filter "publish=3000" | xargs -r docker stop
                 docker run -d -p 3000:3000 --name todo-app todo-app:latest
                 '''
             }
-        }
-
+}
     }
 
     post {
