@@ -1,7 +1,7 @@
 FROM node:18-alpine AS deps
 WORKDIR /app
 
-RUN npm ci --only=production
+RUN RUN npm install --only=production 
 
 FROM node:18-alpine
 WORKDIR /app
