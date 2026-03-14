@@ -25,8 +25,6 @@ pipeline {
 
         stage('Run') {
             steps {
-                sh 'docker stop todo-app || true'
-                sh 'docker rm todo-app || true'
                 sh 'docker run -d -p 3000:3000 --name todo-app todo-app:latest'
             }
         }
