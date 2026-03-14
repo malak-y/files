@@ -3,17 +3,10 @@ pipeline {
 
     stages {
 
-        stage('Clone') {
-            steps {
-                git branch: 'main', url: 'https://github.com/malak-y/files'
-            }
-        }
-
         stage('Test') {
             steps {
-                dir('app') {
-                    sh 'npm ci && npm test'
-                }
+                sh 'npm ci'
+                sh 'npm test'
             }
         }
 
@@ -25,7 +18,10 @@ pipeline {
 
         stage('Run') {
             steps {
-                sh 'docker run -d -p 3000:3000 --name todo-app todo-app:latest'
+                sh '''
+                docker rm -f todo-app || true
+                docker run -d -p 3000:3000 --name todo-app todo-app:latest
+                '''
             }
         }
 
