@@ -1,7 +1,8 @@
 FROM node:18-alpine AS deps
 WORKDIR /app
-COPY app/package*.json ./
-RUN npm install --only=production
+
+COPY package*.json ./
+RUN npm install --omit=dev
 
 FROM node:18-alpine
 WORKDIR /app
@@ -9,7 +10,7 @@ WORKDIR /app
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 COPY --from=deps /app/node_modules ./node_modules
-COPY app/ .
+COPY . .
 
 RUN chown -R appuser:appgroup /app
 USER appuser
