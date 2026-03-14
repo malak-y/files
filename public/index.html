@@ -42,8 +42,6 @@
       max-width: 560px;
       margin: 0 auto;
     }
-
-    /* Notebook ruled lines background */
     .notebook-lines {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       pointer-events: none; z-index: 0;
@@ -54,8 +52,6 @@
     }
 
     .content { position: relative; z-index: 1; }
-
-    /* ── Header ── */
     .header {
       margin-bottom: 32px;
       border-bottom: 2px solid var(--ink);
@@ -101,7 +97,6 @@
     .dot-done  { background: var(--accent); }
     .dot-left  { background: var(--ink); }
 
-    /* ── Input ── */
     .add-row {
       display: flex;
       gap: 8px;
@@ -143,8 +138,6 @@
     }
     .add-btn:hover  { background: var(--accent); }
     .add-btn:active { transform: scale(0.94); }
-
-    /* ── Filters ── */
     .filters {
       display: flex;
       gap: 4px;
@@ -171,7 +164,6 @@
       background: var(--accent-soft);
     }
 
-    /* ── Todo List ── */
     #list { display: flex; flex-direction: column; }
 
     .item {
@@ -187,7 +179,6 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* Custom checkbox */
     .check-box {
       width: 18px; height: 18px;
       flex-shrink: 0;
@@ -248,8 +239,6 @@
       margin-top: 1px;
     }
     .del-btn:hover { color: var(--accent); }
-
-    /* ── Empty state ── */
     #empty {
       display: none;
       text-align: center;
@@ -265,7 +254,6 @@
       color: var(--ruled);
     }
 
-    /* ── Footer ── */
     .footer {
       margin-top: 22px;
       display: flex;
@@ -292,8 +280,6 @@
       transition: color 0.15s, border-color 0.15s;
     }
     .clear-btn:hover { color: var(--accent); border-bottom-color: var(--accent); }
-
-    /* ── Toast ── */
     #toast {
       position: fixed;
       bottom: 28px;
@@ -373,17 +359,15 @@
   <div id="toast"></div>
 
 <script>
-  const API = '';   // same origin as Express server
+  const API = '';   
   let todos  = [];
   let filter = 'all';
 
-  // ── Set today's date ─────────────────────────────────────────────────────────
   document.getElementById('today-date').textContent =
     new Date().toLocaleDateString('en-GB', {
       weekday: 'long', day: 'numeric', month: 'long'
     });
 
-  // ── API helper ───────────────────────────────────────────────────────────────
   async function api(path, opts = {}) {
     const r = await fetch(API + path, {
       headers: { 'Content-Type': 'application/json' },
@@ -392,14 +376,12 @@
     return r.json();
   }
 
-  // ── Load todos ───────────────────────────────────────────────────────────────
   async function load() {
     const d = await api('/todos');
     todos = d.todos || [];
     render();
   }
 
-  // ── Add ──────────────────────────────────────────────────────────────────────
   async function addTodo() {
     const inp = document.getElementById('new-task');
     const title = inp.value.trim();
@@ -417,7 +399,6 @@
     }
   }
 
-  // ── Toggle complete ──────────────────────────────────────────────────────────
   async function toggle(id) {
     const todo = todos.find(t => t.id === id);
     if (!todo) return;
@@ -428,7 +409,6 @@
     if (d.success) { Object.assign(todo, d.todo); render(); }
   }
 
-  // ── Delete ───────────────────────────────────────────────────────────────────
   async function del(id) {
     const d = await api('/todos/' + id, { method: 'DELETE' });
     if (d.success) {
@@ -438,7 +418,6 @@
     }
   }
 
-  // ── Clear completed ──────────────────────────────────────────────────────────
   async function clearDone() {
     const d = await api('/todos', { method: 'DELETE' });
     if (d.success) {
@@ -448,7 +427,6 @@
     }
   }
 
-  // ── Filter ───────────────────────────────────────────────────────────────────
   function setFilter(f, btn) {
     filter = f;
     document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
@@ -456,7 +434,6 @@
     render();
   }
 
-  // ── Render ───────────────────────────────────────────────────────────────────
   function render() {
     const list  = document.getElementById('list');
     const empty = document.getElementById('empty');
@@ -466,16 +443,12 @@
       filter === 'done'   ?  t.completed : true
     );
 
-    // Stats
     document.getElementById('s-total').textContent = todos.length;
     document.getElementById('s-done').textContent  = todos.filter(t => t.completed).length;
     document.getElementById('s-left').textContent  = todos.filter(t => !t.completed).length;
 
-    // Footer count
     const fc = document.getElementById('footer-count');
     fc.textContent = vis.length === 0 ? '' : vis.length + ' task' + (vis.length !== 1 ? 's' : '');
-
-    // List
     list.innerHTML = '';
     empty.style.display = vis.length ? 'none' : 'block';
 
@@ -494,7 +467,6 @@
     });
   }
 
-  // ── Toast ────────────────────────────────────────────────────────────────────
   let _timer;
   function toast(msg) {
     const el = document.getElementById('toast');
@@ -504,7 +476,6 @@
     _timer = setTimeout(() => el.classList.remove('show'), 2200);
   }
 
-  // ── Helpers ──────────────────────────────────────────────────────────────────
   function esc(s) {
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
@@ -513,13 +484,9 @@
       day: '2-digit', month: 'short', year: 'numeric'
     });
   }
-
-  // ── Enter key ────────────────────────────────────────────────────────────────
   document.getElementById('new-task').addEventListener('keydown', e => {
     if (e.key === 'Enter') addTodo();
   });
-
-  // ── Init ─────────────────────────────────────────────────────────────────────
   load();
 </script>
 
